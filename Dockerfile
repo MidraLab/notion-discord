@@ -1,6 +1,7 @@
 FROM golang:1.19.5-alpine
 # アップデートとgitのインストール！！
 RUN apk update && apk add git
+RUN apk add bash
 # appディレクトリの作成
 RUN mkdir /go/src/app
 # ワーキングディレクトリの設定
