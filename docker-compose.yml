@@ -1,0 +1,8 @@
+version: "3"
+services:
+    mtg-notification: # サービス名
+        container_name: mtg-notification
+        build: .
+        tty: true
+        volumes:
+            - ./app:/go/src/app
