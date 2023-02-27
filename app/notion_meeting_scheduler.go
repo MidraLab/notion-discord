@@ -22,11 +22,11 @@ const daysUntilNextThursday = 11
 
 func main() {
 	c := make(chan string)
-	go ReadPageID(c)
-	PatchPageTitle(<-c)
+	go readPageID(c)
+	patchPageTitle(<-c)
 }
 
-func ReadPageID(c chan string) {
+func readPageID(c chan string) {
 	notionDatabaseURL := loadEnv("NOTION_DATABASE_URL")
 	url := "https://api.notion.com/v1/databases/" + notionDatabaseURL + "/query"
 
@@ -59,12 +59,12 @@ func ReadPageID(c chan string) {
 	c <- pageID
 }
 
-func PatchPageTitle(id string) {
+func patchPageTitle(id string) {
 	url := "https://api.notion.com/v1/pages/" + id
 
 	nextThursday := time.Now().AddDate(0, 0, (daysUntilNextThursday-int(time.Now().Weekday()))%7)
 	nextThursdayStartStr := nextThursday.Format("2006-01-02")
-	nextThursdayTitleStr := nextThursday.Format("01/02")
+	nextThursdayTitleStr := nextThursday.Format("1/02")
 
 	payload := strings.NewReader(fmt.Sprintf(`{
     "properties": {
