@@ -64,7 +64,7 @@ func patchPageTitle(id string) {
 
 	nextThursday := time.Now().AddDate(0, 0, (daysUntilNextThursday-int(time.Now().Weekday()))%7)
 	nextThursdayStartStr := nextThursday.Format("2006-01-02")
-	nextThursdayTitleStr := nextThursday.Format("1/02")
+	nextThursdayTitleStr := nextThursday.Format("01/02")
 
 	payload := strings.NewReader(fmt.Sprintf(`{
     "properties": {
