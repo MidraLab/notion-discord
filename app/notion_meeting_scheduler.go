@@ -12,11 +12,13 @@ import (
 	"time"
 )
 
-type NotionResponse struct {
+type notionResponse struct {
 	Results []struct {
 		ID string `json:"id"`
-	} `json:"results"`
+	} `json:"Results"`
 }
+
+const daysUntilNextThursday = 11
 
 func main() {
 	c := make(chan string)
@@ -30,8 +32,8 @@ func ReadPageID(c chan string) {
 
 	payload := strings.NewReader(`{
     "filter": {
-        "property": "名前",
-        "title": {
+        "property": "会議種別",
+        "multi_select": {
             "contains": "定例"
         }
     },
@@ -48,7 +50,7 @@ func ReadPageID(c chan string) {
 	res, _ := http.DefaultClient.Do(req)
 	defer res.Body.Close()
 
-	var notionRes NotionResponse
+	var notionRes notionResponse
 	if err := json.NewDecoder(res.Body).Decode(&notionRes); err != nil {
 		log.Fatal(err)
 	}
@@ -60,8 +62,9 @@ func ReadPageID(c chan string) {
 func PatchPageTitle(id string) {
 	url := "https://api.notion.com/v1/pages/" + id
 
-	nextThursday := time.Now().AddDate(0, 0, (11-int(time.Now().Weekday()))%7)
-	nextThursdayStr := nextThursday.Format("2006-01-02")
+	nextThursday := time.Now().AddDate(0, 0, (daysUntilNextThursday-int(time.Now().Weekday()))%7)
+	nextThursdayStartStr := nextThursday.Format("2006-01-02")
+	nextThursdayTitleStr := nextThursday.Format("01/02")
 
 	payload := strings.NewReader(fmt.Sprintf(`{
     "properties": {
@@ -73,9 +76,15 @@ func PatchPageTitle(id string) {
                     }
                 }
             ]
+        },
+		"会議開催日": {
+            "date": {
+   				 "start": "%s",
+   				 "end": null
+  			}
         }
     }
-}`, nextThursdayStr))
+}`, nextThursdayTitleStr, nextThursdayStartStr))
 
 	req, _ := http.NewRequest("PATCH", url, payload)
 
