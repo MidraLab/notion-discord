@@ -3,32 +3,28 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/joho/godotenv"
 	"io/ioutil"
-	"log"
 	"net/http"
-	"os"
 	"strings"
 	"time"
 )
 
+const daysUntilNextThursday = 11
+
+type NotionAPI struct {
+	DatabaseURL string
+	APIKey      string
+}
+
 type notionResponse struct {
 	Results []struct {
-		ID string `json:"id"`
+		ID  string `json:"id"`
+		URL string `json:"url"`
 	} `json:"Results"`
 }
 
-const daysUntilNextThursday = 11
-
-func main() {
-	c := make(chan string)
-	go readPageID(c)
-	patchPageTitle(<-c)
-}
-
-func readPageID(c chan string) {
-	notionDatabaseURL := loadEnv("NOTION_DATABASE_URL")
-	url := "https://api.notion.com/v1/databases/" + notionDatabaseURL + "/query"
+func (n *NotionAPI) ReadPageID() (string, string, error) {
+	dbUrl := "https://api.notion.com/v1/databases/" + n.DatabaseURL + "/query"
 
 	payload := strings.NewReader(`{
     "filter": {
@@ -40,26 +36,37 @@ func readPageID(c chan string) {
     "page_size": 1
 }`)
 
-	req, _ := http.NewRequest("POST", url, payload)
+	req, err := http.NewRequest("POST", dbUrl, payload)
+	if err != nil {
+		return "", "", err
+	}
 
 	req.Header.Add("accept", "application/json")
-	req.Header.Add("Authorization", "Bearer "+loadEnv("NOTION_API"))
+	req.Header.Add("Authorization", "Bearer "+n.APIKey)
 	req.Header.Add("Notion-Version", "2022-06-28")
 	req.Header.Add("content-type", "application/json")
 
-	res, _ := http.DefaultClient.Do(req)
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return "", "", err
+	}
 	defer res.Body.Close()
 
 	var notionRes notionResponse
 	if err := json.NewDecoder(res.Body).Decode(&notionRes); err != nil {
-		log.Fatal(err)
+		return "", "", err
 	}
-	pageID := notionRes.Results[0].ID
 
-	c <- pageID
+	if len(notionRes.Results) == 0 {
+		return "", "", fmt.Errorf("no page found in Notion database")
+	}
+
+	url := notionRes.Results[0].URL
+
+	return notionRes.Results[0].ID, url, nil
 }
 
-func patchPageTitle(id string) {
+func (n *NotionAPI) PatchPageTitle(id string) error {
 	url := "https://api.notion.com/v1/pages/" + id
 
 	nextThursday := time.Now().AddDate(0, 0, (daysUntilNextThursday-int(time.Now().Weekday()))%7)
@@ -86,29 +93,27 @@ func patchPageTitle(id string) {
     }
 }`, nextThursdayTitleStr, nextThursdayStartStr))
 
-	req, _ := http.NewRequest("PATCH", url, payload)
+	req, err := http.NewRequest("PATCH", url, payload)
+	if err != nil {
+		return err
+	}
 
 	req.Header.Add("accept", "application/json")
-	req.Header.Add("Authorization", "Bearer "+loadEnv("NOTION_API"))
+	req.Header.Add("Authorization", "Bearer "+n.APIKey)
 	req.Header.Add("Notion-Version", "2022-06-28")
 	req.Header.Add("content-type", "application/json")
 
-	res, _ := http.DefaultClient.Do(req)
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
 
 	defer res.Body.Close()
-	body, _ := ioutil.ReadAll(res.Body)
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return err
+	}
 
 	fmt.Println(string(body))
-}
-
-func loadEnv(keyName string) string {
-	err := godotenv.Load(".env")
-	// もし err がnilではないなら、"読み込み出来ませんでした"が出力されます。
-	if err != nil {
-		fmt.Printf("読み込み出来ませんでした: %v", err)
-	}
-	// .envの SAMPLE_MESSAGEを取得して、messageに代入します。
-	message := os.Getenv(keyName)
-
-	return message
+	return nil
 }

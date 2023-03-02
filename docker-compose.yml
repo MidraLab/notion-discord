@@ -1,8 +1,11 @@
 version: "3"
 services:
-    mtg-notification: # サービス名
+    mtg-notification:
         container_name: mtg-notification
         build: .
         tty: true
         volumes:
             - ./app:/go/src/app
+        environment:
+            - NOTION_API_KEY=YOUR_API_KEY
+            - DISCORD_WEBHOOK_URL=YOUR_WEBHOOK_URL
