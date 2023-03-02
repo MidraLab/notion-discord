@@ -7,5 +7,5 @@ services:
         volumes:
             - ./app:/go/src/app
         environment:
-            - NOTION_API_KEY=YOUR_API_KEY
+            - MIDRA_LAB_NOTION_API=YOUR_API_KEY
             - DISCORD_WEBHOOK_URL=YOUR_WEBHOOK_URL
