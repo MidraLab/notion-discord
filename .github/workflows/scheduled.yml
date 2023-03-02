@@ -1,0 +1,17 @@
+name: CI
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: # この行を追加
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      MIDRA_LAB_NOTION_API: ${{ secrets.MIDRA_LAB_NOTION_API }}
+      DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build and Run
+        run: |
+          docker-compose up -d
+          docker-compose exec -e MIDRA_LAB_NOTION_API=MIDRA_LAB_NOTION_API -e DISCORD_WEBHOOK_URL=$DISCORD_WEBHOOK_URL mtg-notification go run main.go
