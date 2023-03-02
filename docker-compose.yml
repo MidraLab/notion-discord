@@ -4,8 +4,9 @@ services:
         container_name: mtg-notification
         build: .
         tty: true
+        environment:
+            - MIDRA_LAB_NOTION_API=${MIDRA_LAB_NOTION_API}
+            - NOTION_DATABASE_URL=${NOTION_DATABASE_URL}
+            - DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}
         volumes:
             - ./app:/go/src/app
-        environment:
-            - MIDRA_LAB_NOTION_API=YOUR_API_KEY
-            - DISCORD_WEBHOOK_URL=YOUR_WEBHOOK_URL
