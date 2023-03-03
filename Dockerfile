@@ -6,6 +6,8 @@ RUN apk add bash
 RUN mkdir /go/src/app
 # ワーキングディレクトリの設定
 WORKDIR /go/src/app
+# Goモジュールの初期化
+RUN go mod init example.com/mtg-notification
 # godotenvライブラリのインストール
 RUN go get github.com/joho/godotenv
 # .envファイルのコピー
