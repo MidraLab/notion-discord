@@ -15,10 +15,10 @@ jobs:
       - name: create env file
         run: |
           ls -la
-          touch app/.env
-          echo "MIDRA_LAB_NOTION_API=${MIDRA_LAB_NOTION_API}" >> app/.env
-          echo "NOTION_DATABASE_URL=${NOTION_DATABASE_URL}" >> app/.env
-          echo "DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}" >> app/.env
+          touch .env
+          echo "MIDRA_LAB_NOTION_API=${MIDRA_LAB_NOTION_API}" >> .env
+          echo "NOTION_DATABASE_URL=${NOTION_DATABASE_URL}" >> .env
+          echo "DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}" >> .env
           cd app
           ls -la
       - name: Build and Run

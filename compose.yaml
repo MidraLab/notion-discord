@@ -9,6 +9,6 @@ services:
             - NOTION_DATABASE_URL=${NOTION_DATABASE_URL}
             - DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}
         env_file:
-            - app/.env
+            - .env
         volumes:
             - ./app:/go/src/app
