@@ -12,6 +12,11 @@ jobs:
       DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
     steps:
       - uses: actions/checkout@v2
+      - name: create env file
+        run: |
+          echo "MIDRA_LAB_NOTION_API=${MIDRA_LAB_NOTION_API}" >> .env
+          echo "NOTION_DATABASE_URL=${NOTION_DATABASE_URL}" >> .env
+          echo "DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}" >> .env
       - name: Build and Run
         run: |
           docker-compose up -d
