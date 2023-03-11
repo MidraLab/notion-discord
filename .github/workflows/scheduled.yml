@@ -1,7 +1,7 @@
 name: CI
 on:
   push:
-    branches: [ main,fix/* ]
+    branches: [ main ]
   workflow_dispatch:
 jobs:
   build:
@@ -14,13 +14,10 @@ jobs:
       - uses: actions/checkout@v2
       - name: create env file
         run: |
-          ls -la
-          touch .env
           echo "MIDRA_LAB_NOTION_API=${MIDRA_LAB_NOTION_API}" >> .env
           echo "NOTION_DATABASE_URL=${NOTION_DATABASE_URL}" >> .env
           echo "DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}" >> .env
-          cd app
-          ls -la
+
       - name: Build
         run: |
           docker-compose up -d --build
