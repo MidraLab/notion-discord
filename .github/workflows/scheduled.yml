@@ -15,9 +15,9 @@ jobs:
       - name: create env file
         run: |
           ls -la
-          echo "MIDRA_LAB_NOTION_API=${MIDRA_LAB_NOTION_API}" >> opt/.env
-          echo "NOTION_DATABASE_URL=${NOTION_DATABASE_URL}" >> opt/.env
-          echo "DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}" >> opt/.env
+          echo "MIDRA_LAB_NOTION_API=${MIDRA_LAB_NOTION_API}" >> app/.env
+          echo "NOTION_DATABASE_URL=${NOTION_DATABASE_URL}" >> app/.env
+          echo "DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}" >> app/.env
       - name: Build and Run
         run: |
           docker-compose up -d
