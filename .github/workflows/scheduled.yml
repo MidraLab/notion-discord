@@ -26,5 +26,5 @@ jobs:
           docker-compose up -d --build
       - name: Run
         run: |
-          docker-compose run mtg-notification go run main.go discord_messager.go notion_page_title_patch.go
+          docker-compose run mtg-notification go run main.go discord_messenger.go notion_page_title_patch.go
 
