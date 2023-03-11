@@ -21,7 +21,10 @@ jobs:
           echo "DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}" >> .env
           cd app
           ls -la
-      - name: Build and Run
+      - name: Build
         run: |
           docker-compose up -d --build
+      - name: Run
+        run: |
           docker-compose run mtg-notification go run main.go
+
