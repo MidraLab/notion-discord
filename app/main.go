@@ -24,9 +24,9 @@ func main() {
 
 	dw := NewDiscordWebhook("NotificationMTG", "https://source.unsplash.com/random", " 定例ドキュメントの更新お願いします！！"+pageURL, nil, false)
 
-	whURL := loadEnv("DISCORD_WEBHOOK_URL")
+	discordWebhookUrl := loadEnv("DISCORD_WEBHOOK_URL")
 
-	if err := dw.SendWebhook(whURL); err != nil {
+	if err := dw.SendWebhook(discordWebhookUrl); err != nil {
 		log.Fatal(err)
 	}
 }
