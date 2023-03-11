@@ -14,9 +14,9 @@ jobs:
       - uses: actions/checkout@v2
       - name: create env file
         run: |
-          echo "MIDRA_LAB_NOTION_API=${MIDRA_LAB_NOTION_API}" >> .env
-          echo "NOTION_DATABASE_URL=${NOTION_DATABASE_URL}" >> .env
-          echo "DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}" >> .env
+          echo "MIDRA_LAB_NOTION_API=${MIDRA_LAB_NOTION_API}" >> opt/.env
+          echo "NOTION_DATABASE_URL=${NOTION_DATABASE_URL}" >> opt/.env
+          echo "DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}" >> opt/.env
       - name: Build and Run
         run: |
           docker-compose up -d
