@@ -22,7 +22,7 @@ func main() {
 		log.Fatalf("failed to patch page title: %v", err)
 	}
 
-	dw := NewDiscordWebhook("NotificationMTG", "https://source.unsplash.com/random", " 定例ドキュメントの更新お願いします！！"+pageURL, nil, false)
+	dw := NewDiscordWebhook("NotificationMTG", "https://source.unsplash.com/random", "@here 定例ドキュメントの更新お願いします！！"+pageURL, nil, false)
 
 	discordWebhookUrl := loadEnv("DISCORD_WEBHOOK_URL")
 
