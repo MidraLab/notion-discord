@@ -1,4 +1,4 @@
-name: CI
+name: notification-scheduled
 on:
   schedule:
     - cron: '0 12 * * thu' # 日本時間の21時に実行
