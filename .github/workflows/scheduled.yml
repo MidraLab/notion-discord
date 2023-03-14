@@ -1,5 +1,7 @@
-name: CI
+name: notification-scheduled
 on:
+  schedule:
+    - cron: '0 12 * * thu' # 日本時間の21時に実行
   push:
     branches: [ main ]
   workflow_dispatch:
@@ -11,8 +13,18 @@ jobs:
       NOTION_DATABASE_URL: ${{ secrets.NOTION_DATABASE_URL }}
       DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
     steps:
-      - uses: actions/checkout@v2
-      - name: Build and Run
+      - uses: actions/checkout@v3.3.0
+      - name: create env file
         run: |
-          docker-compose up -d
-          docker-compose run mtg-notification go run main.go
+          touch .env
+          echo "MIDRA_LAB_NOTION_API=${MIDRA_LAB_NOTION_API}" >> .env
+          echo "NOTION_DATABASE_URL=${NOTION_DATABASE_URL}" >> .env
+          echo "DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}" >> .env
+
+      - name: Build
+        run: |
+          docker-compose up -d --build
+      - name: Run
+        run: |
+          docker-compose run mtg-notification go run main.go discord_messenger.go notion_page_title_patch.go
+
