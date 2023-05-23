@@ -15,10 +15,10 @@ type DiscordWebhook struct {
 	TTS       bool           `json:"tts"`
 }
 
-type DiscordImg struct {
-	URL string `json:"url"`
-	H   int    `json:"height"`
-	W   int    `json:"width"`
+type DiscordImage struct {
+	URL    string `json:"url"`
+	Height int    `json:"height"`
+	Width  int    `json:"width"`
 }
 
 type DiscordAuthor struct {
@@ -34,14 +34,14 @@ type DiscordField struct {
 }
 
 type DiscordEmbed struct {
-	Title  string         `json:"title"`
-	Desc   string         `json:"description"`
-	URL    string         `json:"url"`
-	Color  int            `json:"color"`
-	Image  DiscordImg     `json:"image"`
-	Thum   DiscordImg     `json:"thumbnail"`
-	Author DiscordAuthor  `json:"author"`
-	Fields []DiscordField `json:"fields"`
+	Title       string         `json:"title"`
+	Description string         `json:"description"`
+	URL         string         `json:"url"`
+	Color       int            `json:"color"`
+	Image       DiscordImage   `json:"image"`
+	Thumbnail   DiscordImage   `json:"thumbnail"`
+	Author      DiscordAuthor  `json:"author"`
+	Fields      []DiscordField `json:"fields"`
 }
 
 func NewDiscordWebhook(userName, avatarURL, content string, embeds []DiscordEmbed, tts bool) *DiscordWebhook {
@@ -54,33 +54,33 @@ func NewDiscordWebhook(userName, avatarURL, content string, embeds []DiscordEmbe
 	}
 }
 
-func (dw *DiscordWebhook) AddEmbeds(embeds ...DiscordEmbed) {
-	dw.Embeds = append(dw.Embeds, embeds...)
+func (webhook *DiscordWebhook) AddEmbeds(embeds ...DiscordEmbed) {
+	webhook.Embeds = append(webhook.Embeds, embeds...)
 }
 
-func (dw *DiscordWebhook) SendWebhook(whURL string) error {
-	j, err := json.Marshal(dw)
+func (webhook *DiscordWebhook) SendWebhook(webhookURL string) error {
+	jsonData, err := json.Marshal(webhook)
 	if err != nil {
-		return fmt.Errorf("json err: %s", err.Error())
+		return fmt.Errorf("json error: %s", err.Error())
 	}
 
-	req, err := http.NewRequest("POST", whURL, bytes.NewBuffer(j))
+	request, err := http.NewRequest("POST", webhookURL, bytes.NewBuffer(jsonData))
 	if err != nil {
-		return fmt.Errorf("new request err: %s", err.Error())
+		return fmt.Errorf("request creation error: %s", err.Error())
 	}
-	req.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Content-Type", "application/json")
 
 	client := http.Client{}
-	resp, err := client.Do(req)
+	response, err := client.Do(request)
 	if err != nil {
-		return fmt.Errorf("client err: %s", err.Error())
+		return fmt.Errorf("client error: %s", err.Error())
 	}
-	defer resp.Body.Close()
+	defer response.Body.Close()
 
-	if resp.StatusCode == 204 {
-		fmt.Println("sent", dw) //成功
+	if response.StatusCode == 204 {
+		fmt.Println("sent", webhook) //成功
 	} else {
-		return fmt.Errorf("%#v\n", resp) //失敗
+		return fmt.Errorf("%#v\n", response) //失敗
 	}
 
 	return nil
