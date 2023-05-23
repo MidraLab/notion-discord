@@ -8,25 +8,25 @@ import (
 )
 
 func main() {
-	notionAPI := &NotionAPI{
+	notionApiInstance := &NotionAPI{
 		DatabaseURL: loadEnv("NOTION_DATABASE_URL"),
 		APIKey:      loadEnv("MIDRA_LAB_NOTION_API"),
 	}
 
-	pageID, pageURL, err := notionAPI.ReadPageID()
+	pageID, pageURL, err := notionApiInstance.ReadPageID()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if err := notionAPI.PatchPageTitle(pageID); err != nil {
-		log.Fatalf("failed to patch page title: %v", err)
+	if err := notionApiInstance.PatchPageTitle(pageID); err != nil {
+		log.Fatalf("Failed to patch page title: %v", err)
 	}
 
-	dw := NewDiscordWebhook("NotificationMTG", "https://source.unsplash.com/random", "@here 定例ドキュメントの更新お願いします！！"+pageURL, nil, false)
+	discordWebhookInstance := NewDiscordWebhook("NotificationMTG", "https://source.unsplash.com/random", "定例ドキュメントの更新お願いします！！"+pageURL, nil, false)
 
 	discordWebhookUrl := loadEnv("DISCORD_WEBHOOK_URL")
 
-	if err := dw.SendWebhook(discordWebhookUrl); err != nil {
+	if err := discordWebhookInstance.SendWebhook(discordWebhookUrl); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -38,7 +38,7 @@ func loadEnv(keyName string) string {
 		fmt.Printf("読み込み出来ませんでした: %v", err)
 	}
 	// .envの SAMPLE_MESSAGEを取得して、messageに代入します。
-	message := os.Getenv(keyName)
+	envValue := os.Getenv(keyName)
 
-	return message
+	return envValue
 }
