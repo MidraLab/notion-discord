@@ -16,15 +16,15 @@ type NotionAPI struct {
 	APIKey      string
 }
 
-type notionResponse struct {
+type NotionResponse struct {
 	Results []struct {
 		ID  string `json:"id"`
 		URL string `json:"url"`
 	} `json:"Results"`
 }
 
-func (n *NotionAPI) ReadPageID() (string, string, error) {
-	dbUrl := "https://api.notion.com/v1/databases/" + n.DatabaseURL + "/query"
+func (apiInstance *NotionAPI) ReadPageID() (string, string, error) {
+	databaseURL := "https://api.notion.com/v1/databases/" + apiInstance.DatabaseURL + "/query"
 
 	payload := strings.NewReader(`{
     "filter": {
@@ -36,38 +36,38 @@ func (n *NotionAPI) ReadPageID() (string, string, error) {
     "page_size": 1
 }`)
 
-	req, err := http.NewRequest("POST", dbUrl, payload)
+	request, err := http.NewRequest("POST", databaseURL, payload)
 	if err != nil {
 		return "", "", err
 	}
 
-	req.Header.Add("accept", "application/json")
-	req.Header.Add("Authorization", "Bearer "+n.APIKey)
-	req.Header.Add("Notion-Version", "2022-06-28")
-	req.Header.Add("content-type", "application/json")
+	request.Header.Add("accept", "application/json")
+	request.Header.Add("Authorization", "Bearer "+apiInstance.APIKey)
+	request.Header.Add("Notion-Version", "2022-06-28")
+	request.Header.Add("content-type", "application/json")
 
-	res, err := http.DefaultClient.Do(req)
+	response, err := http.DefaultClient.Do(request)
 	if err != nil {
 		return "", "", err
 	}
-	defer res.Body.Close()
+	defer response.Body.Close()
 
-	var notionRes notionResponse
-	if err := json.NewDecoder(res.Body).Decode(&notionRes); err != nil {
+	var notionResponse NotionResponse
+	if err := json.NewDecoder(response.Body).Decode(&notionResponse); err != nil {
 		return "", "", err
 	}
 
-	if len(notionRes.Results) == 0 {
+	if len(notionResponse.Results) == 0 {
 		return "", "", fmt.Errorf("no page found in Notion database")
 	}
 
-	url := notionRes.Results[0].URL
+	pageURL := notionResponse.Results[0].URL
 
-	return notionRes.Results[0].ID, url, nil
+	return notionResponse.Results[0].ID, pageURL, nil
 }
 
-func (n *NotionAPI) PatchPageTitle(id string) error {
-	url := "https://api.notion.com/v1/pages/" + id
+func (apiInstance *NotionAPI) PatchPageTitle(pageID string) error {
+	apiEndpoint := "https://api.notion.com/v1/pages/" + pageID
 
 	nextThursday := time.Now().AddDate(0, 0, (daysUntilNextThursday-int(time.Now().Weekday()))%7)
 	nextThursdayStartStr := nextThursday.Format("2006-01-02")
@@ -93,23 +93,23 @@ func (n *NotionAPI) PatchPageTitle(id string) error {
     }
 }`, nextThursdayTitleStr, nextThursdayStartStr))
 
-	req, err := http.NewRequest("PATCH", url, payload)
+	request, err := http.NewRequest("PATCH", apiEndpoint, payload)
 	if err != nil {
 		return err
 	}
 
-	req.Header.Add("accept", "application/json")
-	req.Header.Add("Authorization", "Bearer "+n.APIKey)
-	req.Header.Add("Notion-Version", "2022-06-28")
-	req.Header.Add("content-type", "application/json")
+	request.Header.Add("accept", "application/json")
+	request.Header.Add("Authorization", "Bearer "+apiInstance.APIKey)
+	request.Header.Add("Notion-Version", "2022-06-28")
+	request.Header.Add("content-type", "application/json")
 
-	res, err := http.DefaultClient.Do(req)
+	response, err := http.DefaultClient.Do(request)
 	if err != nil {
 		return err
 	}
 
-	defer res.Body.Close()
-	body, err := ioutil.ReadAll(res.Body)
+	defer response.Body.Close()
+	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		return err
 	}
