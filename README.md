@@ -2,6 +2,13 @@
 * Notionの定例ページのタイトルの自動変更
 * Notionの定例ページをdiscordに通知
 
+# set up environment
+```dotenv
+MIDRA_LAB_NOTION_API=YOUR_NOTION_API
+NOTION_DATABASE_URL=YOUR_NOTION_DATABASE_URL
+DISCORD_WEBHOOK_URL=YOUR_DISCORD_WEBHOOK_URL
+```
+
 # setup
 1. install docker and docker desktop
 2. clone this repository
