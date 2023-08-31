@@ -1,7 +1,7 @@
 name: notification-scheduled
 on:
   schedule:
-    - cron: '0 12 * * thu' # 日本時間の21時に実行
+    - cron: '0 12 * * wen' # 日本時間の21時に実行
   workflow_dispatch:
 jobs:
   build:
